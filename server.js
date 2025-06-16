@@ -55,11 +55,11 @@ function getLotteryDate() {
 app.post('/bets', async (req, res) => {
   const lotteryDate = getLotteryDate();
   if (!lotteryDate) {
-    return res.status(403).json({ error: 'Đặt cược đã đóng' });
+    return res.status(403).json({ error: 'Betting is closed' });
   }
   const { walletAddress, numbers, amountPerPosition, txHash } = req.body;
   if (!walletAddress || !numbers || !amountPerPosition || !txHash) {
-    return res.status(400).json({ error: 'Thiếu các trường bắt buộc' });
+    return res.status(400).json({ error: 'Missing required fields' });
   }
   try {
     const result = await pool.query(
@@ -69,55 +69,55 @@ app.post('/bets', async (req, res) => {
     res.status(201).json({ id: result.rows[0].id });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Lỗi server nội bộ' });
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
 app.get('/results', async (req, res) => {
   const { date } = req.query;
   if (!date) {
-    return res.status(400).json({ error: 'Yêu cầu ngày' });
+    return res.status(400).json({ error: 'Date is required' });
   }
   try {
     const result = await pool.query('SELECT winning_numbers FROM results WHERE lottery_date = $1', [date]);
     if (result.rows.length > 0) {
       res.json({ winningNumbers: result.rows[0].winning_numbers });
     } else {
-      res.status(404).json({ error: 'Không tìm thấy kết quả' });
+      res.status(404).json({ error: 'Results not found' });
     }
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Lỗi server nội bộ' });
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
 app.post('/results', async (req, res) => {
   const apiKey = req.headers['x-api-key'];
   if (apiKey !== process.env.API_KEY) {
-    return res.status(403).json({ error: 'Không được phép' });
+    return res.status(403).json({ error: 'Forbidden' });
   }
   const { date, winningNumbers } = req.body;
   if (!date || !winningNumbers) {
-    return res.status(400).json({ error: 'Yêu cầu ngày và số trúng thưởng' });
+    return res.status(400).json({ error: 'Date and winning numbers are required' });
   }
   try {
     await pool.query('INSERT INTO results (lottery_date, winning_numbers) VALUES ($1, $2) ON CONFLICT (lottery_date) DO UPDATE SET winning_numbers = $2', [date, winningNumbers]);
-    res.status(201).json({ message: 'Kết quả đã được cập nhật' });
+    res.status(201).json({ message: 'Results updated' });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Lỗi server nội bộ' });
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
 app.get('/winners', async (req, res) => {
   const { date } = req.query;
   if (!date) {
-    return res.status(400).json({ error: 'Yêu cầu ngày' });
+    return res.status(400).json({ error: 'Date is required' });
   }
   try {
     const result = await pool.query('SELECT winning_numbers FROM results WHERE lottery_date = $1', [date]);
     if (result.rows.length === 0) {
-      return res.status(404).json({ error: 'Không tìm thấy kết quả' });
+      return res.status(404).json({ error: 'Results not found' });
     }
     const winningNumbers = result.rows[0].winning_numbers.split(',');
     const bets = await pool.query('SELECT wallet_address, numbers, amount_per_position FROM bets WHERE lottery_date = $1', [date]);
@@ -133,14 +133,14 @@ app.get('/winners', async (req, res) => {
     res.json(winners);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Lỗi server nội bộ' });
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
 app.get('/stats', async (req, res) => {
   const { date } = req.query;
   if (!date) {
-    return res.status(400).json({ error: 'Yêu cầu ngày' });
+    return res.status(400).json({ error: 'Date is required' });
   }
   try {
     const totalBetsResult = await pool.query(
@@ -153,7 +153,7 @@ app.get('/stats', async (req, res) => {
     res.json({ totalBets, ticketsSold });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Lỗi server nội bộ' });
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
@@ -182,13 +182,13 @@ app.get('/recent-winners', async (req, res) => {
     res.json(recentWinners);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Lỗi server nội bộ' });
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
 createTables().then(() => {
   const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => {
-    console.log(`Server đang chạy trên cổng ${PORT}`);
+    console.log(`Server is running on port ${PORT}`);
   });
 });

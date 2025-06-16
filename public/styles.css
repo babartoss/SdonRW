@@ -1,71 +1,76 @@
-/* Basic reset */
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
 
-    body {
-        font-family: Arial, sans-serif;
-        line-height: 1.6;
-        padding: 20px;
-        background-color: #f4f4f4;
-    }
+header {
+    background-color: #007bff;
+    color: white;
+    text-align: center;
+    padding: 20px;
+}
 
-    h1, h2, h3 {
-        color: #333;
-        margin-bottom: 10px;
-    }
+main {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 0 20px;
+}
 
-    p {
-        margin-bottom: 10px;
-    }
+.section {
+    background-color: white;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
 
-    .form-input {
-        padding: 8px;
-        margin-bottom: 10px;
-        width: 100%;
-        max-width: 300px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-    }
+h2 {
+    color: #007bff;
+}
 
-    button {
-        padding: 10px 20px;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        margin-bottom: 10px;
-    }
+label {
+    display: block;
+    margin-top: 10px;
+}
 
-    button:hover {
-        background-color: #0056b3;
-    }
+input[type="number"], input[type="text"], input[type="date"] {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
 
-    .section {
-        margin-bottom: 30px;
-        background-color: white;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
+button {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+}
 
-    .form-container {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
+button:hover {
+    background-color: #218838;
+}
 
-    #totalCost {
-        font-weight: bold;
-    }
+#totalCost {
+    font-weight: bold;
+}
 
-    #results ul {
-        list-style: none;
-    }
+#results-section p {
+    margin: 5px 0;
+}
 
-    #transparency ul {
-        list-style: none;
-    }
+#transparency-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+#transparency-section li {
+    margin-bottom: 5px;
+}
