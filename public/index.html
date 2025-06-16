@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Indochinese Style Betting</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="section">
+        <h1>Indochinese Style Betting</h1>
+        <img src="image1.jpg" class="my-image" alt="Indochinese Style Betting">
+    </header>
+
+    <section id="how-to-play" class="section">
+        <h2>How to Play</h2>
+        <p>Welcome to Indochinese Style Betting. Here's how it works:</p>
+        <ul>
+            <li>Choose one or more 2-digit numbers (00-99).</li>
+            <li>Set your bet amount per position (minimum 0.2 USDC, maximum 100 USDC).</li>
+            <li>Your number(s) will be checked against the last two digits of the special prize and the four seventh prizes from the XSMB lottery.</li>
+            <li>If your number matches any of these five positions, you win.</li>
+            <li>The odds are 1:60 per position.</li>
+            <li>Payouts are made at 9:00 AM the next day (2:00 AM UTC).</li>
+            <li>Results are announced daily at 18:15 (11:15 UTC).</li>
+        </ul>
+        <p>Note: A fixed fee of 0.10 USDC is charged per betting session.</p>
+    </section>
+
+    <section id="place-bet" class="section">
+        <h2>Place Your Bet</h2>
+        <p>Please ensure your wallet is connected to the Base network. Supported wallets include MetaMask, Coinbase Wallet, and others via WalletConnect.</p>
+        <button id="connectWallet">Connect Wallet</button>
+        <div id="betFormContainer" style="display: none;">
+            <form id="betForm" class="form-container">
+                <label for="betAmount">Bet Amount per Position (USDC):</label>
+                <input type="number" id="betAmount" class="form-input" min="0.2" max="100" step="0.1" required>
+                <label for="numbers">Numbers (00-99, separated by commas):</label>
+                <input type="text" id="numbers" class="form-input" required>
+                <p>Fixed Fee: 0.10 USDC per session</p>
+                <p>Total Cost: <span id="totalCost">0.00</span> USDC</p>
+                <button type="submit">Place Bet</button>
+            </form>
+        </div>
+    </section>
+
+    <section id="donation" class="section">
+        <h2>Optional Donation</h2>
+        <p>Support the developer by donating any amount (optional).</p>
+        <form id="donationForm" class="form-container">
+            <label for="donationAmount">Donation Amount (USDC):</label>
+            <input type="number" id="donationAmount" class="form-input" min="0" step="0.1">
+            <button type="submit">Donate</button>
+        </form>
+    </section>
+
+    <section id="results" class="section">
+        <h2>Results</h2>
+        <p>Date: 08/06/2025</p>
+        <ul>
+            <li id="result1">--</li>
+            <li id="result2">--</li>
+            <li id="result3">--</li>
+            <li id="result4">--</li>
+            <li id="result5">--</li>
+        </ul>
+        <p>Check official results at <a href="https://xosominhngoc.com.vn" target="_blank">Xổ số Minh Ngọc</a></p>
+    </section>
+
+    <section id="transparency" class="section">
+        <h2>Transparency</h2>
+        <p>Total Bets: <span id="totalBets">0</span> USDC</p>
+        <p>Tickets Sold: <span id="ticketsSold">0</span></p>
+        <p>Recent Winners: <ul id="recentWinners"><li>None</li></ul></p>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js" type="text/javascript"></script>
+    <script src="app.js"></script>
+</body>
+</html>
