@@ -1,4 +1,4 @@
-const backendUrl = ''; // Update with your Railway.app URL, e.g., https://betting-app-production.up.railway.app
+const backendUrl = 'https://sdonrw-production.up.railway.app'; // Update with your Railway.app URL, e.g., https://betting-app-production.up.railway.app
 const applicationAddress = '0xb37bF0176558B9e76507b79d38D4696DD1805bee';
 const usdcContractAddress = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
 
