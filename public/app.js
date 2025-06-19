@@ -1,4 +1,4 @@
-const backendUrl = 'https://sdonrw-production.up.railway.app'; // Update with your Railway.app URL, e.g., https://betting-app-production.up.railway.app
+const backendUrl = 'postgresql://postgres:IjREPrBTNlTCwEhpOAjePMzidVNbdzBo@postgres.railway.internal:5432/railway' // Cập nhật với URL Railway.app của bạn
 const applicationAddress = '0xb37bF0176558B9e76507b79d38D4696DD1805bee';
 const usdcContractAddress = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
 
@@ -14,8 +14,8 @@ async function connectWallet() {
                     chainId: '0x2105',
                     chainName: 'Base Mainnet',
                     nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
-                    rpcUrls: ['https://mainnet.base.org'],
-                    blockExplorerUrls: ['https://basescan.org']
+                    rpcUrls: ['[invalid url, do not cite]'],
+                    blockExplorerUrls: ['[invalid url, do not cite]']
                 }]
             });
             await window.ethereum.request({ method: 'eth_requestAccounts' });
@@ -25,33 +25,33 @@ async function connectWallet() {
             document.getElementById('walletAddress').textContent = address;
         } catch (error) {
             console.error('Wallet connection error:', error);
-            alert('Unable to connect wallet');
+            alert('Không thể kết nối ví. Vui lòng đảm bảo ví của bạn hỗ trợ mạng Base và các phương thức cần thiết.');
         }
     } else {
-        alert('Please install MetaMask or another wallet.');
+        alert('Vui lòng cài đặt MetaMask hoặc ví khác hỗ trợ mạng Base.');
     }
 }
 
 async function placeBet() {
     if (!signer) {
-        alert('Please connect your wallet first');
+        alert('Vui lòng kết nối ví của bạn trước');
         return;
     }
     const betAmount = document.getElementById('betAmount').value;
     const numbers = document.getElementById('numbers').value;
     if (!betAmount || !numbers) {
-        alert('Please enter bet amount and numbers');
+        alert('Vui lòng nhập số tiền cược và các số');
         return;
     }
     const numbersArray = numbers.split(',').map(num => num.trim());
     if (numbersArray.some(num => !/^\d{2}$/.test(num))) {
-        alert('Numbers must be two digits, separated by commas');
+        alert('Các số phải là hai chữ số, cách nhau bằng dấu phẩy');
         return;
     }
     const totalPositions = numbersArray.length;
     const totalCost = (parseFloat(betAmount) * totalPositions) + 0.10;
     document.getElementById('totalCost').textContent = totalCost.toFixed(2) + ' USDC';
-    if (!confirm(`Total cost: ${totalCost.toFixed(2)} USDC. Continue?`)) {
+    if (!confirm(`Tổng chi phí: ${totalCost.toFixed(2)} USDC. Tiếp tục?`)) {
         return;
     }
     const usdcContract = new ethers.Contract(usdcContractAddress, [
@@ -61,7 +61,7 @@ async function placeBet() {
     try {
         const tx = await usdcContract.transfer(applicationAddress, amountInUnits);
         await tx.wait();
-        console.log('Transaction successful:', tx.hash);
+        console.log('Giao dịch thành công:', tx.hash);
         const response = await fetch(`${backendUrl}/bets`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -73,22 +73,22 @@ async function placeBet() {
             })
         });
         const data = await response.json();
-        console.log('Bet recorded:', data);
-        alert('Bet placed successfully');
+        console.log('Cược đã được ghi nhận:', data);
+        alert('Đặt cược thành công');
     } catch (error) {
-        console.error('Bet placement error:', error);
-        alert('Unable to place bet');
+        console.error('Lỗi khi đặt cược:', error);
+        alert('Không thể đặt cược');
     }
 }
 
 async function donate() {
     if (!signer) {
-        alert('Please connect your wallet first');
+        alert('Vui lòng kết nối ví của bạn trước');
         return;
     }
     const donationAmount = document.getElementById('donationAmount').value;
     if (!donationAmount) {
-        alert('Please enter donation amount');
+        alert('Vui lòng nhập số tiền quyên góp');
         return;
     }
     const usdcContract = new ethers.Contract(usdcContractAddress, [
@@ -98,11 +98,11 @@ async function donate() {
     try {
         const tx = await usdcContract.transfer(applicationAddress, amountInUnits);
         await tx.wait();
-        console.log('Donation successful:', tx.hash);
-        alert('Thank you for your donation');
+        console.log('Quyên góp thành công:', tx.hash);
+        alert('Cảm ơn bạn đã quyên góp');
     } catch (error) {
-        console.error('Donation error:', error);
-        alert('Unable to donate');
+        console.error('Lỗi khi quyên góp:', error);
+        alert('Không thể quyên góp');
     }
 }
 
@@ -119,9 +119,15 @@ async function displayResults(date) {
             for (let i = 1; i <= 5; i++) {
                 document.getElementById(`result${i}`).textContent = '--';
             }
+            if (data.error) {
+                console.error('Lỗi từ server:', data.error);
+            }
         }
     } catch (error) {
-        console.error('Error fetching results:', error);
+        console.error('Lỗi khi lấy kết quả:', error);
+        for (let i = 1; i <= 5; i++) {
+            document.getElementById(`result${i}`).textContent = '--';
+        }
     }
 }
 
@@ -129,10 +135,20 @@ async function displayStats(date) {
     try {
         const response = await fetch(`${backendUrl}/stats?date=${date}`);
         const data = await response.json();
-        document.getElementById('totalBets').textContent = data.totalBets + ' USDC';
-        document.getElementById('ticketsSold').textContent = data.ticketsSold;
+        if (data.totalBets !== undefined && data.ticketsSold !== undefined) {
+            document.getElementById('totalBets').textContent = data.totalBets + ' USDC';
+            document.getElementById('ticketsSold').textContent = data.ticketsSold;
+        } else {
+            document.getElementById('totalBets').textContent = '0 USDC';
+            document.getElementById('ticketsSold').textContent = '0';
+            if (data.error) {
+                console.error('Lỗi từ server:', data.error);
+            }
+        }
     } catch (error) {
-        console.error('Error fetching stats:', error);
+        console.error('Lỗi khi lấy thống kê:', error);
+        document.getElementById('totalBets').textContent = '0 USDC';
+        document.getElementById('ticketsSold').textContent = '0';
     }
 }
 
@@ -142,17 +158,24 @@ async function displayRecentWinners() {
         const data = await response.json();
         const winnersList = document.getElementById('recentWinners');
         winnersList.innerHTML = '';
-        if (data.length === 0) {
-            winnersList.innerHTML = '<li>None yet</li>';
+        if (Array.isArray(data)) {
+            if (data.length === 0) {
+                winnersList.innerHTML = '<li>Chưa có</li>';
+            } else {
+                data.forEach(winner => {
+                    const li = document.createElement('li');
+                    li.textContent = `${winner.walletAddress} đã thắng ${winner.payout} USDC vào ${winner.date}`;
+                    winnersList.appendChild(li);
+                });
+            }
         } else {
-            data.forEach(winner => {
-                const li = document.createElement('li');
-                li.textContent = `${winner.walletAddress} won ${winner.payout} USDC on ${winner.date}`;
-                winnersList.appendChild(li);
-            });
+            console.error('Dự kiến là một mảng cho người chiến thắng gần đây, nhận được:', data);
+            winnersList.innerHTML = '<li>Lỗi khi lấy người chiến thắng</li>';
         }
     } catch (error) {
-        console.error('Error fetching recent winners:', error);
+        console.error('Lỗi khi lấy người chiến thắng gần đây:', error);
+        const winnersList = document.getElementById('recentWinners');
+        winnersList.innerHTML = '<li>Lỗi khi lấy người chiến thắng</li>';
     }
 }
 
@@ -166,7 +189,7 @@ document.addEventListener('DOMContentLoaded', () => {
             displayResults(date);
             displayStats(date);
         } else {
-            alert('Please select a date');
+            alert('Vui lòng chọn ngày');
         }
     });
     const today = new Date().toISOString().split('T')[0];
